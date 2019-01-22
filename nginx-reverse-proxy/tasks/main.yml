@@ -1,0 +1,6 @@
+---
+# tasks file for nginx-reverse-proxy
+
+- include: deploy.yml
+  tags: deploy
+

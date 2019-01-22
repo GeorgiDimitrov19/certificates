@@ -1,0 +1,8 @@
+---
+# handlers file for nginx-reverse-proxy
+- name: restart nginx
+  become: true
+  service:
+    name: nginx
+    state: restarted
+

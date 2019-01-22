@@ -1,0 +1,28 @@
+---
+- name: delete file
+  become: true
+  file: 
+    path: /etc/nginx/sites-enabled/
+    state: absent
+- name: Copy private key
+  become: true
+  copy:
+    src:  nginx-reverse-proxy/files/star.upnetix.tech.key
+    dest: /etc/ssl/private/
+   
+
+- name: Copy certificates
+  become: true
+  copy:
+    src: nginx-reverse-proxy/files/star.upnetix.tech.crt
+    dest: /etc/ssl/certs/
+
+- name: deploy reverse proxy configurations
+  become: true
+  template:
+    src: reverse-proxy.conf.j2
+    dest: /etc/nginx/sites-enabled/
+  with_items: "{{ nginx_reverse_proxy_proxies }}"
+  notify:
+    - restart nginx
+

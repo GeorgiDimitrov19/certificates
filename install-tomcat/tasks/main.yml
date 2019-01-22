@@ -1,0 +1,121 @@
+---
+
+- name: Check OS
+  tags: tomcat
+  assert: { that: "ansible_os_family == 'Debian'" }
+
+- name: Install the JVM and tomcat
+  apt: update_cache=yes name={{ item }} state=present
+  tags: tomcat
+  with_items:
+    - "{{ jvm_package }}"
+    - "{{ tomcat_package }}"
+
+- name: Make tomcat enabled
+  service: name={{ tomcat_service_name }} enabled=yes
+  tags: tomcat
+
+- name: Activate authbind for tomcat
+  lineinfile: dest=/etc/default/tomcat8 line="AUTHBIND=yes" regexp="^AUTHBIND="
+  when: tomcat_default_port|int <= 1024 or tomcat_default_port_ssl|int <= 1024
+  tags: tomcat
+
+- name: Check authbind connection file
+  stat: path=/etc/authbind/byport/{{ tomcat_default_port }}
+  register: authfile
+  tags: tomcat
+
+- name: Enable not default port on Debian
+  file:
+    path: /etc/authbind/byport/{{ tomcat_default_port }}
+    mode: 0755
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    state: "{{ 'file' if  authfile.stat.exists else 'touch'}}"
+  when: tomcat_default_port|int <= 1024
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Check authbind ssl connection file
+  stat: path=/etc/authbind/byport/{{ tomcat_default_port_ssl }}
+  register: authfile_ssl
+  tags: tomcat
+
+- name: Enable not default ssl port on Debian
+  file:
+    path: /etc/authbind/byport/{{ tomcat_default_port_ssl }}
+    mode: 0755
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    state: "{{ 'file' if  authfile_ssl.stat.exists else 'touch'}}"
+  when: tomcat_default_port_ssl|int <= 1024
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Configure the memory size
+  lineinfile:
+    dest: /etc/default/tomcat8
+    line: 'JAVA_OPTS="-Djava.awt.headless=true -Xmx{{ tomcat_memory_size }} -XX:+UseConcMarkSweepGC"'
+    regexp: '^JAVA_OPTS.*Xmx.*$'
+    backrefs: yes
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Configure the permanent memory size
+  lineinfile:
+    dest: /etc/default/tomcat8
+    line: 'JAVA_OPTS="${JAVA_OPTS} -XX:MaxPermSize={{ tomcat_memory_permsize }}"'
+    regexp: 'MaxPermSize'
+    insertafter: 'Xmx'
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Configure tomcat connector port
+  lineinfile:
+    dest: /etc/tomcat8/server.xml
+    line: '    <Connector port="{{ tomcat_default_port }}" protocol="HTTP/1.1"'
+    regexp: '.*Connector port=.*protocol="HTTP/1.1"'
+    backrefs: yes
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Configure redirect port
+  replace:
+    dest: /etc/tomcat8/server.xml
+    regexp: 'redirectPort="\d*"'
+    replace: 'redirectPort="{{ tomcat_default_port_ssl }}"'
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Copy the keystore
+  copy: src={{ keystore }} dest={{ tomcat_keystore }}  mode=0644 owner={{ tomcat_user }} group={{ tomcat_group }}
+  when: keystore is defined
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Create selfsigned keystore
+  command: /usr/bin/keytool -genkey -alias {{ tomcat_keystore_cert_alias }} -keyalg RSA -keystore {{ tomcat_keystore }} -keypass {{ tomcat_keystore_passphrase }} -storepass changeit -validity 10950 -dname "CN={{ ansible_fqdn }}, O=GLOBEX, L=Cypress Creek, C=US"
+  args:
+    creates: "{{ tomcat_keystore }}"
+  when: keystore is undefined
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Fix keystore permission
+  file: path={{ tomcat_keystore }} mode=0644 owner={{ tomcat_user }} group={{ tomcat_group }}
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
+
+- name: Configure the ssl connector
+  blockinfile:
+    dest: /etc/tomcat8/server.xml
+    marker: '    <!-- Ansible managed block {mark} -->'
+    insertbefore: '<!-- Define an AJP 1.3 Connector on port 8009 -->'
+    block: |
+        <Connector port= "{{ tomcat_default_port_ssl }}" protocol= "org.apache.coyote.http11.Http11Nio2Protocol"
+                                         maxThreads= "150" SSLEnabled= "true" scheme= "https" secure= "true"
+                                         clientAuth= "false" sslProtocol= "TLS" compression= "on" socket.txBufSize= "2000000"
+                                         keystoreFile= "{{ tomcat_keystore }}" keyAlias= "{{ tomcat_keystore_cert_alias }}"
+                                         keyPass= "{{ tomcat_keystore_passphrase }}"/>
+  notify: "{{ 'Restart tomcat'  if ansible_virtualization_type != 'docker' else 'Restart tomcat in docker' }}"
+  tags: tomcat
