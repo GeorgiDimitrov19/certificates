@@ -1,0 +1,21 @@
+---
+# tasks file for download-war
+- name: Download war file
+  get_url:
+    url: https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war
+    dest: /tmp/ROOT.war
+    mode: 0755
+
+- name: Remove all files in /var/lib/tomcat8/webapps
+  become: true
+  file:
+    path: /var/lib/tomcat8/webapps/*
+    state: absent
+
+- name: Copy file to webbapps
+  become: true
+  copy:
+    remote_src: true
+    src: /tmp/ROOT.war
+    dest: /var/lib/tomcat8/webapps/
+ 
