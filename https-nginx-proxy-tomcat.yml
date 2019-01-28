@@ -1,6 +1,6 @@
 ---
 # tasks file for nginx-reverse-proxy
-- hosts: 192.168.48.166
+- hosts: all
   roles:
      - install-nginx
      - install-tomcat
