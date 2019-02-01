@@ -21,9 +21,7 @@
     owner: tomcat8
     mode: 755
     
-- name: Restart tomcat
-  service: state=restarted name=tomcat8
-  tags: tomcat
+
 
 
     
