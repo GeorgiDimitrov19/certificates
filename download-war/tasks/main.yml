@@ -22,7 +22,8 @@
     mode: 755
     
 - name: Restart tomcat
-  service: state=restarted name=tomcat8   
+  service: state=restarted name=tomcat8
+  tags: tomcat
 
 
     
