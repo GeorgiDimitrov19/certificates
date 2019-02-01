@@ -8,7 +8,8 @@
 
 - name: make dir /var/lib/tomcat8/webapps
   become: true
-    path: /var/lib/tomcat8/webapps/
+  file:
+    path: /var/lib/tomcat8/webapps
     state: directory
     mode: 755
 
