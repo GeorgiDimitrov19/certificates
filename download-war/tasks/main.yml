@@ -15,7 +15,7 @@
 
 - name: Download war file
   get_url:
-    url: {{ war_file }}
+    url: "{{ war_file }}"
     dest: /tmp/ROOT.war
     mode: 0755
 
