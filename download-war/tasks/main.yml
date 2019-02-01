@@ -3,7 +3,7 @@
 - name: delete everything in /var/lib/tomcat8/webapps
   become: true
   file:
-    path: /var/lib/tomcat8/webapps/*
+    path: /var/lib/tomcat8/webapps/
     state: absent
 
 #- name: Download war file
