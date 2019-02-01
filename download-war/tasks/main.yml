@@ -18,7 +18,7 @@
   get_url:
     url: https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war
     dest: /var/lib/tomcat8/webapps/ROOT.war
-    mode: 766
+    mode: 755
 
 
     
