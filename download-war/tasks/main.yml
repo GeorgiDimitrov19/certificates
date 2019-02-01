@@ -6,6 +6,13 @@
     path: /var/lib/tomcat8/webapps/
     state: absent
 
+- name: make dir /var/lib/tomcat8/webapps
+  become: true
+  file:
+    path: /var/lib/tomcat8/webapps/
+    state: directory
+    mode: 755
+
 - name: Download war file
   become: true
   get_url:
