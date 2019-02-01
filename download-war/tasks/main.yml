@@ -11,7 +11,7 @@
   file:
     path: /var/lib/tomcat8/webapps
     state: directory
-    mode: 755
+    mode: 0755
 
 - name: Download war file
   get_url:
