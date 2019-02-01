@@ -1,1 +1,6 @@
+---
+# tasks file for nginx-reverse-proxy
+- hosts: all
+  roles:
+     - download-war 
 
