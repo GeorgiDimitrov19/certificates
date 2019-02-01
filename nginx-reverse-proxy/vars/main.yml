@@ -1,3 +1,6 @@
 ---
 # vars file for nginx-reverse-proxy
-
+ssl_certificate: 'star.upnetix.tech.crt'
+ssl_certificate_key: 'star.upnetix.tech.key'
+proxy_pass_uri: 'localhost:8080'
+server_name_uri: 'georgi-app.upnetix.tech'
