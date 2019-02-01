@@ -17,7 +17,6 @@
   get_url:
     url: https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war
     dest: /tmp/ROOT.war
-    mode: 0755
 
 - name: Copy file to webbapps
   become: true
@@ -25,6 +24,7 @@
     remote_src: true
     src: /tmp/ROOT.war
     dest: /var/lib/tomcat8/webapps/
+    mode: 755
 
     
 
