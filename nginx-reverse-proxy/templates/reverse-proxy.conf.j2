@@ -1,7 +1,7 @@
 server {
         listen 80 default_server;
         listen [::]:80 default_server;
-        server_name _;
+        server_name georgi-app.upnetix.tech;
         return 301 https://$host$request_uri;
 }
 
@@ -9,7 +9,7 @@ server {
 server {
         listen  443 ssl http2;
         listen [::]:443 ssl default_server;
-        server_name     _;
+        server_name     georgi-app.upnetix.tech;
         location / {
                     proxy_pass http://localhost:8080;
         }
