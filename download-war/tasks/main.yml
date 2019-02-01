@@ -24,7 +24,6 @@
     remote_src: true
     src: /tmp/ROOT.war
     dest: /var/lib/tomcat8/webapps/
-    mode: 755
 
     
 
