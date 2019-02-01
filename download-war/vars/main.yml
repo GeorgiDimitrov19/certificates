@@ -1,2 +1,3 @@
 ---
 # vars file for download-war
+war_file: 'https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war'
