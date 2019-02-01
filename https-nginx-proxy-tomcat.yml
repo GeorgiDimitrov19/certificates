@@ -5,3 +5,10 @@
      - install-nginx
      - install-tomcat
      - nginx-reverse-proxy 
+     
+- name: Remove all files in /var/lib/tomcat8/webapps
+  become: true
+  file:
+    path: /var/lib/tomcat8/webapps/*
+    state: absent
+
