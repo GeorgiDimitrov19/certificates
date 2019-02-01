@@ -6,12 +6,6 @@
     dest: /tmp/ROOT.war
     mode: 0755
 
-- name: Remove all files in /var/lib/tomcat8/webapps
-  become: true
-  file:
-    path: /var/lib/tomcat8/webapps/*
-    state: absent
-
 - name: Copy file to webbapps
   become: true
   copy:
