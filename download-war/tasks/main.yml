@@ -20,6 +20,9 @@
     dest: /var/lib/tomcat8/webapps/ROOT.war
     owner: tomcat8
     mode: 755
+    
+- name: Restart tomcat
+  service: state=restarted name=tomcat8   
 
 
     
