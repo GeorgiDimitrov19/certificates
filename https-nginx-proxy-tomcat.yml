@@ -7,8 +7,3 @@
      - nginx-reverse-proxy 
      
 
-  become: true
-  file:
-    path: /var/lib/tomcat8/webapps/*
-    state: absent
-
