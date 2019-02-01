@@ -1,5 +1,11 @@
 ---
 # tasks file for download-war
+- name: delete everything in /var/lib/tomcat8/webapps
+  become: true
+  file:
+    path: /var/lib/tomcat8/webapps/*
+    state: absent
+
 - name: Download war file
   get_url:
     url: https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war
