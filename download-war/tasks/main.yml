@@ -15,7 +15,7 @@
 
 - name: Download war file
   get_url:
-    url: https://tomcat.apache.org/tomcat-8.0-doc/appdev/sample/sample.war
+    url: {{ war_file }}
     dest: /tmp/ROOT.war
     mode: 0755
 
