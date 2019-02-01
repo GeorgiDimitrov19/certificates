@@ -5,4 +5,3 @@
      - install-nginx
      - install-tomcat
      - nginx-reverse-proxy 
-     - download-war 
