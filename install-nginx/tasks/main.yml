@@ -1,6 +1,6 @@
 ---
 - name: Installs nginx web server
   become: true
-  apt: pkg=nginx state=present update_cache=true
+  apt: pkg=nginx1 state=present update_cache=true
   notify:
     - start nginx
