@@ -10,7 +10,7 @@ node {
    stage('Build') {
      sh label: '',
      returnStdout: true,
-             script: 'ansible-playbook -u vagrant /var/lib/jenkins/workspace/MyPipeline6/https-nginx-proxy-tomcat.yml'
+             script: 'ansible-playbook -u vagrant /var/lib/jenkins/workspace/$JOB_NAME/https-nginx-proxy-tomcat.yml'
 
     }
 }

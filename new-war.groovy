@@ -10,6 +10,6 @@ node {
    stage('Build') {
      sh label: '',
         returnStdout: true,
-        script: 'ansible-playbook -u vagrant /var/lib/jenkins/workspace/MyPipeline6/download-war.yml'
+        script: 'ansible-playbook -u vagrant /var/lib/jenkins/workspace/$JOB_NAME/download-war.yml'
    }
 }
